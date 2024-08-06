@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -54,10 +55,15 @@ dependencies {
 
     // Room for local database (if needed)
     implementation("androidx.room:room-runtime:2.5.0")
+    implementation(libs.firebase.auth)
 //    kapt("androidx.room:room-compiler:2.5.0")
 
     // Testing libraries
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // Other dependencies
+    implementation("androidx.activity:activity-ktx:1.6.0")
+    implementation("com.google.android.material:material:1.4.0")
 }
