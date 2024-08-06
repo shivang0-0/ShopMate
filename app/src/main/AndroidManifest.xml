@@ -42,6 +42,8 @@
         <activity
             android:name=".StoreActivity"
             android:exported="true" />
+<!--        <activity android:name=".CategoryActivity" />-->
+
     </application>
 
 </manifest>
