@@ -17,7 +17,7 @@
         android:id="@+id/btn_store"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Store"
+        android:text="In-Store"
         android:layout_below="@id/btn_online"
         android:layout_marginTop="16dp"/>
 

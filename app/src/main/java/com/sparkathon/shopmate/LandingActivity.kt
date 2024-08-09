@@ -21,7 +21,7 @@ class LandingActivity : AppCompatActivity() {
 
         btnStore.setOnClickListener {
             // Redirect to StoreActivity
-            startActivity(Intent(this, StoreActivity::class.java))
+            startActivity(Intent(this, MainActivityInstore::class.java))
         }
     }
 }
