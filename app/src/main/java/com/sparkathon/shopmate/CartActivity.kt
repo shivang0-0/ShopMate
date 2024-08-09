@@ -4,14 +4,27 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.activity.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class CartActivity : AppCompatActivity() {
 
     private lateinit var bottomNav: BottomNavigationView
+    private val cartViewModel: CartViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cart)
+
+        // Initialize RecyclerView
+        val cartRecyclerView: RecyclerView = findViewById(R.id.cartRecyclerView)
+        cartRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Observe cart items and update the adapter
+        cartViewModel.cartItems.observe(this) { cartItems ->
+            cartRecyclerView.adapter = ProductAdapter(cartItems)
+        }
 
         // Initialize BottomNavigationView
         bottomNav = findViewById(R.id.bottom_nav)
