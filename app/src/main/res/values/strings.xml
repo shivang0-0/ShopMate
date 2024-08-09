@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ShopMate</string>
+<!--    <string name="app_name">ShopMate</string>-->
+    <string name="product_price">Price: $%.2f</string>
 </resources>

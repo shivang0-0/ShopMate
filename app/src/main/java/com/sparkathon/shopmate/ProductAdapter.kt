@@ -1,5 +1,6 @@
 package com.sparkathon.shopmate
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -20,16 +21,26 @@ class ProductAdapter(private val products: List<Product>) : RecyclerView.Adapter
 
     override fun getItemCount(): Int = products.size
 
-    class ProductViewHolder(private val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ProductViewHolder(private val binding: ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(product: Product) {
             binding.productName.text = product.title
-            binding.productPrice.text = product.price.toString()
+            binding.productPrice.text = binding.root.context.getString(R.string.product_price, product.price)
             Picasso.get().load(product.image).into(binding.productImage)
 
-            // Simulate varying item heights for the masonry effect
+            // Set dynamic height for the image view (optional)
             val params = binding.productImage.layoutParams
-            params.height = (300 + Math.random() * 300).toInt()  // random height between 300 and 600
+            params.height = (300 + Math.random() * 300).toInt()  // Random height between 300 and 600
             binding.productImage.layoutParams = params
+
+            // Handle click event to open ProductDetailActivity
+            binding.root.setOnClickListener {
+                val intent = Intent(binding.root.context, ProductDetailActivity::class.java).apply {
+                    putExtra("PRODUCT_TITLE", product.title)
+                    putExtra("PRODUCT_PRICE", product.price)
+                    putExtra("PRODUCT_IMAGE", product.image)
+                }
+                binding.root.context.startActivity(intent)
+            }
         }
     }
 }

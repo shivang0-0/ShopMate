@@ -53,6 +53,8 @@
 <!--        <activity android:name=".CategoryActivity" />-->
 <!--        <activity android:name=".CategoryActivity" />-->
         <activity android:name=".ProductListActivity" />
+        <activity android:name=".ProductDetailActivity" />
+
     </application>
 
 </manifest>
