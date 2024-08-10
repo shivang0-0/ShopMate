@@ -9,7 +9,7 @@ const router = express.Router();
 // @desc    Register a user
 // @access  Public
 router.post('/register', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, firstname, lastname, mobile } = req.body;
 
   try {
     let user = await User.findOne({ email });
@@ -21,6 +21,9 @@ router.post('/register', async (req, res) => {
     user = new User({
       email,
       password,
+      firstname,
+      lastname,
+      mobile
     });
 
     const salt = await bcrypt.genSalt(10);
@@ -36,7 +39,7 @@ router.post('/register', async (req, res) => {
 
     jwt.sign(
       payload,
-      'yourSecretKey', // Replace with a secure secret key
+      process.env.JWT_SECRET,
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
