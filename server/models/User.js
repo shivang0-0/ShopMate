@@ -10,6 +10,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  firstname: {
+    type: String,
+    required: true,
+  },
+  lastname: {
+    type: String,
+    required: true,
+  },
+  mobile: {
+    type: String,
+    required: true,
+  },
 });
 
 const User = mongoose.model('User', UserSchema);
