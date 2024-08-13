@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">ShopMate</string>
-    <string name="email_hint">Email</string>
-    <string name="password_hint">Password</string>
+    <string name="logo_description">App Logo</string>
     <string name="login_button">Login</string>
     <string name="register_button">Register</string>
-    <string name="logo_description">App Logo</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="firstname_hint">First Name</string>
+    <string name="lastname_hint">Last Name</string>
+    <string name="mobile_hint">Mobile No.</string>
+    <string name="switch_to_register">Continue to Register</string>
+    <string name="switch_to_login">Continue to Login</string>
 </resources>

@@ -1,22 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
+    <!-- Light Theme -->
     <style name="Theme.ShopMate" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/walmart_blue</item>
+        <item name="colorPrimaryVariant">@color/walmart_dark_blue</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/walmart_yellow</item>
+        <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:colorBackground">@color/walmart_light_gray</item>
+        <item name="android:textColorPrimary">@color/black</item>
     </style>
 
+    <!-- Dark Theme -->
     <style name="Theme.ShopMate.Dark" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorPrimary">@color/walmart_blue</item>
+        <item name="colorPrimaryVariant">@color/walmart_dark_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/walmart_yellow</item>
+        <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:colorBackground">@color/black</item>
+        <item name="android:textColorPrimary">@color/white</item>
     </style>
 
 </resources>

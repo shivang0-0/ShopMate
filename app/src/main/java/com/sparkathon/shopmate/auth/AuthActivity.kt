@@ -4,6 +4,7 @@ import LoginRequest
 import RegisterRequest
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.sparkathon.shopmate.api.RetrofitInstance
@@ -33,14 +34,24 @@ class AuthActivity : AppCompatActivity() {
         }
 
         binding.registerButton.setOnClickListener {
-            val email = binding.emailEditText.text.toString().trim()
-            val password = binding.passwordEditText.text.toString().trim()
-            register(email, password)
+            val email = binding.registerEmailEditText.text.toString().trim()
+            val password = binding.registerPasswordEditText.text.toString().trim()
+            val firstname = binding.firstnameEditText.text.toString().trim()
+            val lastname = binding.lastnameEditText.text.toString().trim()
+            val mobile = binding.mobileEditText.text.toString().trim()
+            register(email, password, firstname, lastname, mobile)
+        }
+
+        binding.switchToRegisterButton.setOnClickListener {
+            toggleForms(showLoginForm = false)
+        }
+
+        binding.switchToLoginButton.setOnClickListener {
+            toggleForms(showLoginForm = true)
         }
     }
 
     private fun login(email: String, password: String) {
-        // Assume you have a Retrofit API instance for login
         val api = RetrofitInstance.api
         val request = LoginRequest(email, password)
         val call = api.login(request)
@@ -60,16 +71,16 @@ class AuthActivity : AppCompatActivity() {
         })
     }
 
-    private fun register(email: String, password: String) {
-        // Assume you have a Retrofit API instance for registration
+    private fun register(email: String, password: String, firstname: String, lastname: String, mobile: String) {
         val api = RetrofitInstance.api
-        val request = RegisterRequest(email, password)
+        val request = RegisterRequest(email, password, firstname, lastname, mobile)
         val call = api.register(request)
 
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 if (response.isSuccessful && response.body()?.success == true) {
                     showToast("Registration successful")
+                    navigateToMainScreen()
                 } else {
                     showToast("Registration failed: ${response.body()?.message}")
                 }
@@ -79,6 +90,13 @@ class AuthActivity : AppCompatActivity() {
                 showToast("Error: ${t.message}")
             }
         })
+    }
+
+    private fun toggleForms(showLoginForm: Boolean) {
+        binding.loginForm.visibility = if (showLoginForm) View.VISIBLE else View.GONE
+        binding.registerForm.visibility = if (showLoginForm) View.GONE else View.VISIBLE
+        binding.switchToRegisterButton.visibility = if (showLoginForm) View.VISIBLE else View.GONE
+        binding.switchToLoginButton.visibility = if (showLoginForm) View.GONE else View.VISIBLE
     }
 
     private fun navigateToMainScreen() {
