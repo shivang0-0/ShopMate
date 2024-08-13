@@ -1,10 +1,11 @@
 package com.sparkathon.shopmate.main
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import AppHeader
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.sparkathon.shopmate.main.screens.InStoreScreen
+import com.sparkathon.shopmate.main.screens.OnlineScreen
 
 @Composable
 fun MainScreen() {
@@ -14,18 +15,35 @@ fun MainScreen() {
 
     // Main Screen layout
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header with the app name and mode switch button
+        // Header with the app name, mode switch button, and cart option
         AppHeader(
             isInStoreMode = isInStoreMode,
             onModeSwitch = { isInStoreMode = !isInStoreMode },
-            isHomePage = isHomePage
+            isHomePage = isHomePage,
+            onCartClick = { /* Handle cart click */ }
         )
 
         // Content based on the selected mode
-        if (isInStoreMode) {
-            InStoreScreen(onNavigate = { isHomePage = it })
-        } else {
-            OnlineScreen(onNavigate = { isHomePage = it })
+        Box(modifier = Modifier.weight(1f)) {
+            if (isInStoreMode) {
+                InStoreScreen(onNavigate = { isHomePage = it })
+            } else {
+                OnlineScreen(onNavigate = { isHomePage = it })
+            }
         }
+
+        // Footer with different items based on the mode
+        AppFooter(
+            isInStoreMode = isInStoreMode,
+            onNavigationItemClick = { page ->
+                when (page) {
+                    Screen.Categories -> TODO()
+                    Screen.Discover -> TODO()
+                    Screen.Map -> TODO()
+                    Screen.Profile -> TODO()
+                    Screen.Wishlist -> TODO()
+                }
+            }
+        )
     }
 }
