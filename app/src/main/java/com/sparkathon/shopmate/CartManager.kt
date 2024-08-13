@@ -1,28 +1,24 @@
 package com.sparkathon.shopmate
 
 import com.sparkathon.shopmate.Product
-
 object CartManager {
-    // List to hold cart items
     private val cartItems = mutableListOf<Product>()
 
-    // Add a product to the cart
     fun addProduct(product: Product) {
-        cartItems.add(product)
+        val existingProduct = cartItems.find { it.id == product.id }
+        if (existingProduct != null) {
+            existingProduct.quantity += 1  // Increment the quantity
+        } else {
+            cartItems.add(product.copy(quantity = 1))  // Add new product with quantity 1
+        }
     }
 
-    // Retrieve the list of items in the cart
-    fun getCartItems(): List<Product> {
+    fun getCartItems(): MutableList<Product> {
         return cartItems
     }
 
-    // Clear the cart
     fun clearCart() {
         cartItems.clear()
     }
-
-    // Remove a product from the cart (if needed)
-    fun removeProduct(product: Product) {
-        cartItems.remove(product)
-    }
 }
+

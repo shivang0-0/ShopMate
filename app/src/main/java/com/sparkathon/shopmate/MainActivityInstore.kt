@@ -6,6 +6,7 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
@@ -14,14 +15,13 @@ import retrofit2.Response
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sparkathon.shopmate.CartAdapter
-
 
 class MainActivityInstore : AppCompatActivity() {
 
     private lateinit var nfcAdapter: NfcAdapter
     private lateinit var cartRecyclerView: RecyclerView
     private lateinit var cartAdapter: CartAdapter
+    private lateinit var totalAmountTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,8 @@ class MainActivityInstore : AppCompatActivity() {
 
         // Initialize RecyclerView
         cartRecyclerView = findViewById(R.id.cartRecyclerView)
-        cartAdapter = CartAdapter(CartManager.getCartItems())
+        totalAmountTextView = findViewById(R.id.total_amount)
+        cartAdapter = CartAdapter(CartManager.getCartItems()) { updateTotalAmount() }
         cartRecyclerView.adapter = cartAdapter
         cartRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -40,6 +41,9 @@ class MainActivityInstore : AppCompatActivity() {
             finish()
             return
         }
+
+        // Initialize total amount
+        updateTotalAmount()
     }
 
     override fun onResume() {
@@ -100,6 +104,7 @@ class MainActivityInstore : AppCompatActivity() {
                         product?.let {
                             CartManager.addProduct(it)
                             cartAdapter.notifyDataSetChanged() // Notify adapter of changes
+                            updateTotalAmount() // Update total amount
                             Toast.makeText(this@MainActivityInstore, "${it.title} added to cart.", Toast.LENGTH_SHORT).show()
                         }
                     } else {
@@ -121,6 +126,8 @@ class MainActivityInstore : AppCompatActivity() {
         }
     }
 
-
-
+    private fun updateTotalAmount() {
+        val totalAmount = CartManager.getCartItems().sumOf { it.price * it.quantity }
+        totalAmountTextView.text = "Total: ₹$totalAmount"
+    }
 }
