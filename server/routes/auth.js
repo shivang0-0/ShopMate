@@ -13,9 +13,15 @@ router.post('/register', async (req, res) => {
 
   try {
     if (!email || !password || !firstname || !lastname || !mobile) {
-      return res.status(400).json({ msg: 'Please enter all required fields' });
+      var fieldMissing = [];
+      if (!email) fieldMissing.push('email');
+      if (!password) fieldMissing.push('password');
+      if (!firstname) fieldMissing.push('firstname');
+      if (!lastname) fieldMissing.push('lastname');
+      if (!mobile) fieldMissing.push('mobile');
+      return res.status(400).json({ msg: 'Please enter all required fields' , fieldMissing: fieldMissing });
     }
-    
+
     let user = await User.findOne({ email });
 
     if (user) {
