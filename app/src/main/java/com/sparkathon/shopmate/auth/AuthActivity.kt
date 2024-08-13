@@ -4,52 +4,86 @@ import LoginRequest
 import RegisterRequest
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.sparkathon.shopmate.api.RetrofitInstance
 import com.sparkathon.shopmate.main.MainActivity
-import com.sparkathon.shopmate.databinding.ActivityAuthBinding
+import com.sparkathon.shopmate.ui.theme.ShopMateTheme
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class AuthActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityAuthBinding
+class AuthActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAuthBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setupListeners()
-    }
-
-    private fun setupListeners() {
-        binding.loginButton.setOnClickListener {
-            val email = binding.emailEditText.text.toString().trim()
-            val password = binding.passwordEditText.text.toString().trim()
-            login(email, password)
-        }
-
-        binding.registerButton.setOnClickListener {
-            val email = binding.registerEmailEditText.text.toString().trim()
-            val password = binding.registerPasswordEditText.text.toString().trim()
-            val firstname = binding.firstnameEditText.text.toString().trim()
-            val lastname = binding.lastnameEditText.text.toString().trim()
-            val mobile = binding.mobileEditText.text.toString().trim()
-            register(email, password, firstname, lastname, mobile)
-        }
-
-        binding.switchToRegisterButton.setOnClickListener {
-            toggleForms(showLoginForm = false)
-        }
-
-        binding.switchToLoginButton.setOnClickListener {
-            toggleForms(showLoginForm = true)
+        setContent {
+            ShopMateTheme {
+                AuthScreen()
+            }
         }
     }
+
+    @Composable
+    fun AuthScreen() {
+        var showLoginForm by remember { mutableStateOf(true) }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "ShopMate",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                if (showLoginForm) {
+                    LoginForm(onLogin = { email, password -> login(email, password) })
+                } else {
+                    RegisterForm(onRegister = { email, password, firstname, lastname, mobile ->
+                        register(email, password, firstname, lastname, mobile)
+                    })
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = { showLoginForm = !showLoginForm }) {
+                    Text(if (showLoginForm) "Continue with Register" else "Continue with Login")
+                }
+            }
+        }
+    }
+
 
     private fun login(email: String, password: String) {
         val api = RetrofitInstance.api
@@ -90,13 +124,6 @@ class AuthActivity : AppCompatActivity() {
                 showToast("Error: ${t.message}")
             }
         })
-    }
-
-    private fun toggleForms(showLoginForm: Boolean) {
-        binding.loginForm.visibility = if (showLoginForm) View.VISIBLE else View.GONE
-        binding.registerForm.visibility = if (showLoginForm) View.GONE else View.VISIBLE
-        binding.switchToRegisterButton.visibility = if (showLoginForm) View.VISIBLE else View.GONE
-        binding.switchToLoginButton.visibility = if (showLoginForm) View.GONE else View.VISIBLE
     }
 
     private fun navigateToMainScreen() {
