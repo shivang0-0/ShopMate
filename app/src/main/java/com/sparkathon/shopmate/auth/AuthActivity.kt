@@ -32,11 +32,19 @@ import com.sparkathon.shopmate.ui.theme.ShopMateTheme
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.content.SharedPreferences
+import androidx.compose.runtime.LaunchedEffect
+import java.util.concurrent.TimeUnit
 
 class AuthActivity : ComponentActivity() {
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPreferences = getSharedPreferences("ShopMatePrefs", MODE_PRIVATE)
+
         setContent {
             ShopMateTheme {
                 AuthScreen()
@@ -47,6 +55,13 @@ class AuthActivity : ComponentActivity() {
     @Composable
     fun AuthScreen() {
         var showLoginForm by remember { mutableStateOf(true) }
+
+        // Check token validity on launch
+        LaunchedEffect(Unit) {
+            if (isTokenValid()) {
+                navigateToMainScreen()
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -84,7 +99,6 @@ class AuthActivity : ComponentActivity() {
         }
     }
 
-
     private fun login(email: String, password: String) {
         val api = RetrofitInstance.api
         val request = LoginRequest(email, password)
@@ -93,6 +107,7 @@ class AuthActivity : ComponentActivity() {
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 if (response.isSuccessful && response.body()?.success == true) {
+                    saveToken(response.body()?.token)
                     navigateToMainScreen()
                 } else {
                     showToast("Login failed: ${response.body()?.message}")
@@ -113,6 +128,7 @@ class AuthActivity : ComponentActivity() {
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 if (response.isSuccessful && response.body()?.success == true) {
+                    saveToken(response.body()?.token)
                     showToast("Registration successful")
                     navigateToMainScreen()
                 } else {
@@ -124,6 +140,27 @@ class AuthActivity : ComponentActivity() {
                 showToast("Error: ${t.message}")
             }
         })
+    }
+
+    private fun saveToken(token: String?) {
+        token?.let {
+            val editor = sharedPreferences.edit()
+            editor.putString("token", it)
+            // Assuming the token expires in 1 hour
+            val expiryTime = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)
+            editor.putLong("expiryTime", expiryTime)
+            editor.apply()
+        }
+    }
+
+    private fun isTokenValid(): Boolean {
+        val token = sharedPreferences.getString("token", null)
+        val expiryTime = sharedPreferences.getLong("expiryTime", 0)
+
+        if (token.isNullOrEmpty() || System.currentTimeMillis() > expiryTime) {
+            return false
+        }
+        return true
     }
 
     private fun navigateToMainScreen() {
