@@ -53,7 +53,7 @@ router.post('/register', async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token , success: true, message: 'User registered successfully' });
       }
     );
   } catch (err) {
@@ -93,7 +93,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, success: true, message: 'User logged in successfully' });
       }
     );
   } catch (err) {
