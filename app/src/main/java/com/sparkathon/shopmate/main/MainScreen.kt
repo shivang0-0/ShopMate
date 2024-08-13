@@ -9,21 +9,17 @@ import com.sparkathon.shopmate.main.screens.OnlineScreen
 
 @Composable
 fun MainScreen() {
-    // State to track the selected mode and current page
     var isInStoreMode by remember { mutableStateOf(false) }
     var isHomePage by remember { mutableStateOf(true) }
 
-    // Main Screen layout
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header with the app name, mode switch button, and cart option
         AppHeader(
             isInStoreMode = isInStoreMode,
             onModeSwitch = { isInStoreMode = !isInStoreMode },
             isHomePage = isHomePage,
-            onCartClick = { /* Handle cart click */ }
+            onCartClick = { TODO() }
         )
 
-        // Content based on the selected mode
         Box(modifier = Modifier.weight(1f)) {
             if (isInStoreMode) {
                 InStoreScreen(onNavigate = { isHomePage = it })
@@ -32,7 +28,6 @@ fun MainScreen() {
             }
         }
 
-        // Footer with different items based on the mode
         AppFooter(
             isInStoreMode = isInStoreMode,
             onNavigationItemClick = { page ->

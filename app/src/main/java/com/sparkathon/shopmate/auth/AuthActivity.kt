@@ -77,7 +77,7 @@ class AuthActivity : ComponentActivity() {
                 Text(
                     text = "ShopMate",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.secondary
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
