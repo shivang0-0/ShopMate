@@ -1,4 +1,4 @@
-package com.sparkathon.shopmate.main.screens
+package com.sparkathon.shopmate.main
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button

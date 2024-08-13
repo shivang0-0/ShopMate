@@ -1,9 +1,12 @@
 package com.sparkathon.shopmate.auth
 
+import LoginRequest
+import RegisterRequest
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.sparkathon.shopmate.api.RetrofitInstance
 import com.sparkathon.shopmate.main.MainActivity
 import com.sparkathon.shopmate.databinding.ActivityAuthBinding
 import retrofit2.Call
@@ -39,7 +42,8 @@ class AuthActivity : AppCompatActivity() {
     private fun login(email: String, password: String) {
         // Assume you have a Retrofit API instance for login
         val api = RetrofitInstance.api
-        val call = api.login(email, password)
+        val request = LoginRequest(email, password)
+        val call = api.login(request)
 
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
@@ -59,7 +63,8 @@ class AuthActivity : AppCompatActivity() {
     private fun register(email: String, password: String) {
         // Assume you have a Retrofit API instance for registration
         val api = RetrofitInstance.api
-        val call = api.register(email, password)
+        val request = RegisterRequest(email, password)
+        val call = api.register(request)
 
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {

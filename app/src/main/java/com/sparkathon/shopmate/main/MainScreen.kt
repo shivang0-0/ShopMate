@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.sparkathon.shopmate.main.screens.InStoreScreen
-import com.sparkathon.shopmate.main.screens.OnlineScreen
 
 @Composable
 fun MainScreen() {
