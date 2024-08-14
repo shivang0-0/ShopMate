@@ -102,4 +102,18 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/profile', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.find({ email: email });
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
