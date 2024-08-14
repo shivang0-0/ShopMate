@@ -1,12 +1,12 @@
 package com.sparkathon.shopmate.api
 
+import AuthResponse
 import LoginRequest
 import Product
 import ProductRequest
 import ProductbyCategoryRequest
 import ProductbyIDRequest
 import RegisterRequest
-import com.sparkathon.shopmate.auth.AuthResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
