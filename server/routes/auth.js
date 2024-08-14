@@ -103,7 +103,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/profile', async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
   try {
     const user = await User.find({ email: email });
     if (user) {

@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 
 router.get('/', async (req, res) => {
-    const { category, product_id } = req.body; 
+    const { category, product_id } = req.query; 
 
     try {
         if (category) {
