@@ -1,3 +1,5 @@
+package com.sparkathon.shopmate.main
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -9,8 +11,7 @@ import com.sparkathon.shopmate.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppHeader(isInStoreMode: Boolean, onModeSwitch: () -> Unit, isHomePage: Boolean, onCartClick: () -> Unit) {
-    // Header layout with primary background color
+fun AppHeader(isInStoreMode: Boolean, onModeSwitch: () -> Unit, onCartClick: () -> Unit, activeScreen: Screen) {
     TopAppBar(
         title = { Text(text = "ShopMate", color = MaterialTheme.colorScheme.onSecondary) },
         actions = {
@@ -18,16 +19,14 @@ fun AppHeader(isInStoreMode: Boolean, onModeSwitch: () -> Unit, isHomePage: Bool
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(end = 16.dp)
             ) {
-                if (isHomePage) {
-                    Button(
-                        onClick = onModeSwitch,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text(text = if (isInStoreMode) "Online" else "In-Store")
-                    }
+                Button(
+                    onClick = onModeSwitch,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(text = if (isInStoreMode) "Online" else "In-Store")
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -36,7 +35,7 @@ fun AppHeader(isInStoreMode: Boolean, onModeSwitch: () -> Unit, isHomePage: Bool
                     Icon(
                         painter = painterResource(id = R.drawable.ic_cart),
                         contentDescription = "Cart",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = if (activeScreen == Screen.Cart) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
