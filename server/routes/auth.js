@@ -104,6 +104,11 @@ router.post('/login', async (req, res) => {
 
 router.get('/profile', async (req, res) => {
   const email = req.query.email;
+
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
   try {
     const user = await User.find({ email: email });
     if (user) {
