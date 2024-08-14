@@ -112,7 +112,16 @@ router.get('/profile', async (req, res) => {
   try {
     const user = await User.find({ email: email });
     if (user) {
-      res.json(user);
+      res.json(
+        user.map((u) => {
+          return {
+            email: u.email,
+            firstname: u.firstname,
+            lastname: u.lastname,
+            mobile: u.mobile,
+          };
+        })
+      );
     } else {
       res.status(404).json({ message: 'User not found' });
     }
