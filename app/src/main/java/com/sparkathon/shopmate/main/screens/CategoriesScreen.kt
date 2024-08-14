@@ -1,80 +1,78 @@
 package com.sparkathon.shopmate.main.screens
 
-import android.content.Intent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
+import Category
+import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.sparkathon.shopmate.api.RetrofitInstance
 import com.sparkathon.shopmate.ui.theme.ShopMateTheme
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import showToast
 
 @Composable
-fun OnlineCategoriesScreen() {
+fun CategoriesScreen() {
     ShopMateTheme {
+        var currentScreen by remember { mutableStateOf("categories") }
+        var selectedCategory by remember { mutableStateOf("") }
         val context = LocalContext.current
         var categories by remember { mutableStateOf(emptyList<String>()) }
         var isLoading by remember { mutableStateOf(true) }
 
         LaunchedEffect(Unit) {
-            // Load categories
-            RetrofitInstance.api.getCategories().enqueue(object : Callback<List<String>> {
-                override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
+            RetrofitInstance.api.getCategories().enqueue(object : Callback<List<Category>> {
+                override fun onResponse(call: Call<List<Category>>, response: Response<List<Category>>) {
+                    Log.d("CategoriesScreen", "Response received: ${response.body()}")
                     if (response.isSuccessful) {
-                        categories = response.body() ?: emptyList()
+                        categories = response.body()?.map { it.name } ?: emptyList()
                         isLoading = false
                     }
                 }
 
-                override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                    // Handle failure
+                override fun onFailure(call: Call<List<Category>>, t: Throwable) {
+                    showToast(context, "Failed to fetch categories: ${t.message}")
+                    Log.e("CategoriesScreen", "Failed to fetch categories", t)
                     isLoading = false
                 }
             })
         }
 
-        Scaffold(
-            bottomBar = {
-                BottomNavigationBar(
-                    onNavItemClicked = { route ->
-                        when (route) {
-                            "discover" -> context.startActivity(Intent(context, DiscoverActivity::class.java))
-                            "category" -> Unit // No action needed as we're already here
-                            "favorite" -> context.startActivity(Intent(context, FavoriteActivity::class.java))
-                            "cart" -> context.startActivity(Intent(context, CartActivity::class.java))
-                            "profile" -> context.startActivity(Intent(context, ProfileActivity::class.java))
-                        }
-                    },
-                    selectedItem = "category"
-                )
-            }
-        ) { paddingValues ->
+        if (currentScreen == "categories") {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(50.dp)
+                    )
                 } else {
                     CategoryList(categories = categories) { category ->
-                        val intent = Intent(context, ProductListActivity::class.java)
-                        intent.putExtra("CATEGORY", category)
-                        context.startActivity(intent)
+                        selectedCategory = category
+                        currentScreen = "productCategoryView"
                     }
                 }
             }
+        } else if (currentScreen == "productCategoryView") {
+            ProductCategoryViewScreen(category = selectedCategory)
         }
     }
 }
@@ -84,7 +82,7 @@ fun CategoryList(categories: List<String>, onCategoryClick: (String) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(vertical = 8.dp)
     ) {
         items(categories) { category ->
             CategoryItem(category = category, onCategoryClick = onCategoryClick)
@@ -94,51 +92,29 @@ fun CategoryList(categories: List<String>, onCategoryClick: (String) -> Unit) {
 
 @Composable
 fun CategoryItem(category: String, onCategoryClick: (String) -> Unit) {
-    Text(
-        text = category,
-        style = MaterialTheme.typography.bodyLarge,
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.onSecondary
+        ),
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onCategoryClick(category) }
             .padding(vertical = 8.dp)
-    )
-}
-
-@Composable
-fun BottomNavigationBar(onNavItemClicked: (String) -> Unit, selectedItem: String) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.secondary,
-        contentColor = MaterialTheme.colorScheme.onSecondary
+            .clickable { onCategoryClick(category) }
     ) {
-        NavigationBarItem(
-            icon = { Icon(painterResource(R.drawable.ic_discover), contentDescription = "Discover") },
-            label = { Text("Discover") },
-            selected = selectedItem == "discover",
-            onClick = { onNavItemClicked("discover") }
-        )
-        NavigationBarItem(
-            icon = { Icon(painterResource(R.drawable.ic_category), contentDescription = "Categories") },
-            label = { Text("Categories") },
-            selected = selectedItem == "category",
-            onClick = { onNavItemClicked("category") }
-        )
-        NavigationBarItem(
-            icon = { Icon(painterResource(R.drawable.ic_favorite), contentDescription = "Favorites") },
-            label = { Text("Favorites") },
-            selected = selectedItem == "favorite",
-            onClick = { onNavItemClicked("favorite") }
-        )
-        NavigationBarItem(
-            icon = { Icon(painterResource(R.drawable.ic_cart), contentDescription = "Cart") },
-            label = { Text("Cart") },
-            selected = selectedItem == "cart",
-            onClick = { onNavItemClicked("cart") }
-        )
-        NavigationBarItem(
-            icon = { Icon(painterResource(R.drawable.ic_profile), contentDescription = "Profile") },
-            label = { Text("Profile") },
-            selected = selectedItem == "profile",
-            onClick = { onNavItemClicked("profile") }
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = category,
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }

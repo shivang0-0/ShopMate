@@ -3,8 +3,10 @@ package com.sparkathon.shopmate.main
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.sparkathon.shopmate.main.screens.*
 
+@Preview
 @Composable
 fun MainScreen() {
     var isInStoreMode by remember { mutableStateOf(false) }
@@ -21,7 +23,7 @@ fun MainScreen() {
         Box(modifier = Modifier.weight(1f)) {
             when (currentScreen) {
                 Screen.Discover -> if (isInStoreMode) InStoreScreen() else OnlineScreen()
-                Screen.Categories -> if (isInStoreMode) InStoreCategoriesScreen() else OnlineCategoriesScreen()
+                Screen.Categories -> CategoriesScreen()
                 Screen.Map -> InStoreMapScreen()
                 Screen.Wishlist -> if (isInStoreMode) InStoreWishlistScreen() else OnlineWishlistScreen()
                 Screen.Profile -> ProfileScreen()

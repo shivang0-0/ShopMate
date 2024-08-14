@@ -1,9 +1,9 @@
 package com.sparkathon.shopmate.api
 
 import AuthResponse
+import Category
 import LoginRequest
 import Product
-import ProductRequest
 import Profile
 import RegisterRequest
 import retrofit2.Call
@@ -24,8 +24,11 @@ interface ApiService {
     fun getProfile(@Query("email") email: String): Call<List<Profile>>
 
     @GET("/products")
-    fun getProducts(@Body request: ProductRequest): Call<List<Product>>
+    fun getProducts(
+        @Query("category") category: String,
+        @Query("product_id") id: Int?
+    ): Call<List<Product>>
 
     @GET("/products/categories")
-    fun getCategories(): Call<List<String>>
+    fun getCategories(): Call<List<Category>>
 }
