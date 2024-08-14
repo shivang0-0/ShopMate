@@ -1,5 +1,6 @@
 package com.sparkathon.shopmate.auth
 
+import AuthResponse
 import LoginRequest
 import RegisterRequest
 import android.content.Intent
