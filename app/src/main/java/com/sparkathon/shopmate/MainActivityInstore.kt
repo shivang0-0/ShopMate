@@ -6,6 +6,7 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ class MainActivityInstore : AppCompatActivity() {
     private lateinit var cartRecyclerView: RecyclerView
     private lateinit var cartAdapter: CartAdapter
     private lateinit var totalAmountTextView: TextView
+    private lateinit var checkoutButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,7 @@ class MainActivityInstore : AppCompatActivity() {
         // Initialize RecyclerView
         cartRecyclerView = findViewById(R.id.cartRecyclerView)
         totalAmountTextView = findViewById(R.id.total_amount)
+        checkoutButton = findViewById(R.id.btn_checkout)
         cartAdapter = CartAdapter(CartManager.getCartItems()) { updateTotalAmount() }
         cartRecyclerView.adapter = cartAdapter
         cartRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -44,6 +47,21 @@ class MainActivityInstore : AppCompatActivity() {
 
         // Initialize total amount
         updateTotalAmount()
+
+        // Handle checkout button click
+        checkoutButton.setOnClickListener {
+            initiatePayment()
+        }
+    }
+
+    private fun initiatePayment() {
+        // Here you would redirect to a payment gateway or another activity for payment processing.
+        // For now, just log a message or show a toast.
+        Toast.makeText(this, "Redirecting to payment gateway...", Toast.LENGTH_SHORT).show()
+
+        // Example: Redirect to a payment activity (not implemented)
+        // val intent = Intent(this, PaymentActivity::class.java)
+        // startActivity(intent)
     }
 
     override fun onResume() {
