@@ -21,7 +21,7 @@ private val ColorScheme = lightColorScheme(
     onPrimary = WalmartLightGray,
     onSecondary = WalmartLightGray,
     onTertiary = WalmartLightGray,
-    onBackground = WalmartLightGray,
+    onBackground = WalmartGray,
     onSurface = WalmartLightGray,
 )
 

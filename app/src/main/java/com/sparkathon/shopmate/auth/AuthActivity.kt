@@ -35,6 +35,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.SharedPreferences
 import androidx.compose.runtime.LaunchedEffect
+import showToast
 import java.util.concurrent.TimeUnit
 
 class AuthActivity : ComponentActivity() {
@@ -109,14 +110,15 @@ class AuthActivity : ComponentActivity() {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 if (response.isSuccessful && response.body()?.success == true) {
                     saveToken(response.body()?.token)
+                    saveEmailToPreferences(context = this@AuthActivity, email = email)
                     navigateToMainScreen()
                 } else {
-                    showToast("Login failed: ${response.body()?.message}")
+                    showToast(this@AuthActivity, "Login failed: ${response.body()?.message}")
                 }
             }
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                showToast("Error: ${t.message}")
+                showToast(this@AuthActivity, "Error: ${t.message}")
             }
         })
     }
@@ -130,15 +132,16 @@ class AuthActivity : ComponentActivity() {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 if (response.isSuccessful && response.body()?.success == true) {
                     saveToken(response.body()?.token)
-                    showToast("Registration successful")
+                    saveEmailToPreferences(context = this@AuthActivity, email = email)
+                    showToast(this@AuthActivity, "Registration successful")
                     navigateToMainScreen()
                 } else {
-                    showToast("Registration failed: ${response.body()?.message}")
+                    showToast(this@AuthActivity, "Registration failed: ${response.body()?.message}")
                 }
             }
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                showToast("Error: ${t.message}")
+                showToast(this@AuthActivity, "Error: ${t.message}")
             }
         })
     }
@@ -147,8 +150,7 @@ class AuthActivity : ComponentActivity() {
         token?.let {
             val editor = sharedPreferences.edit()
             editor.putString("token", it)
-            // Assuming the token expires in 1 hour
-            val expiryTime = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)
+            val expiryTime = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(24)
             editor.putLong("expiryTime", expiryTime)
             editor.apply()
         }
@@ -168,9 +170,5 @@ class AuthActivity : ComponentActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
