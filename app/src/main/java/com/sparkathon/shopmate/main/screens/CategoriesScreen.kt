@@ -1,6 +1,8 @@
 package com.sparkathon.shopmate.main.screens
 
 import Category
+import Product
+import Rating
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,6 +32,7 @@ fun CategoriesScreen() {
     ShopMateTheme {
         var currentScreen by remember { mutableStateOf("categories") }
         var selectedCategory by remember { mutableStateOf("") }
+        var selectedProduct by remember { mutableStateOf(Product(0, "", 0.0, "", 0, "", "", Rating(0.0f, 0))) }
         val context = LocalContext.current
         var categories by remember { mutableStateOf(emptyList<String>()) }
         var isLoading by remember { mutableStateOf(true) }
@@ -72,7 +75,12 @@ fun CategoriesScreen() {
                 }
             }
         } else if (currentScreen == "productCategoryView") {
-            ProductCategoryViewScreen(category = selectedCategory)
+            ProductCategoryViewScreen(category = selectedCategory, onProductClick = { product ->
+                selectedProduct = product
+                currentScreen = "productView"
+            })
+        } else if (currentScreen == "productView") {
+            ProductViewScreen(product = selectedProduct)
         }
     }
 }

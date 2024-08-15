@@ -30,7 +30,7 @@ import retrofit2.Response
 import showToast
 
 @Composable
-fun ProductCategoryViewScreen(category: String) {
+fun ProductCategoryViewScreen(category: String, onProductClick: (Product) -> Unit) {
     ShopMateTheme {
         val context = LocalContext.current
         var products by remember { mutableStateOf(emptyList<Product>()) }
@@ -67,7 +67,7 @@ fun ProductCategoryViewScreen(category: String) {
                 )
             } else {
                 ProductList(products = products) { product ->
-                    TODO() // Handle product click event
+                    onProductClick(product)
                 }
             }
         }
@@ -133,7 +133,7 @@ fun ProductItem(product: Product, onProductClick: (Product) -> Unit) {
                 Text(
                     text = "Price: $${product.price}",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
