@@ -48,7 +48,7 @@ fun ProductViewScreen(product: Product) {
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { addToCart(context, product) }) {
+        Button(onClick = { addToCart(context, product.id.toString()) }) {
             Text(text = "Add to Cart")
         }
     }
