@@ -25,8 +25,8 @@ interface ApiService {
 
     @GET("/products")
     fun getProducts(
-        @Query("category") category: String,
-        @Query("product_id") id: Int?
+        @Query("category") category: String? = null,
+        @Query("product_id") id: Int? = null
     ): Call<List<Product>>
 
     @GET("/products/categories")
