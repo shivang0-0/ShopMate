@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.sparkathon.shopmate.api.RetrofitInstance
+import com.sparkathon.shopmate.main.components.ProductList
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

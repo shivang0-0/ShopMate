@@ -1,4 +1,4 @@
-package com.sparkathon.shopmate.main.screens
+package com.sparkathon.shopmate.main.components
 
 import Product
 import androidx.compose.foundation.Image
