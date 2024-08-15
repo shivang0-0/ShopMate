@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
         if (product_id) {
             const product = await Product.findOne({ id: product_id });
             if (product) {
-                return res.json(product);
+                return res.json([product]);
             } else {
                 return res.status(404).json({ message: 'Product not found' });
             }
