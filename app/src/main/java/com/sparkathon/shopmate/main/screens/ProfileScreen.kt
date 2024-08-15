@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sparkathon.shopmate.api.RetrofitInstance
-import com.sparkathon.shopmate.auth.getEmailFromPreferences
+import com.sparkathon.shopmate.preferences.getEmailFromPreferences
 import com.sparkathon.shopmate.ui.theme.ShopMateTheme
 import retrofit2.Call
 import retrofit2.Callback

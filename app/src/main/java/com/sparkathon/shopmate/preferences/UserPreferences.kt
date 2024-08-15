@@ -1,4 +1,4 @@
-package com.sparkathon.shopmate.auth
+package com.sparkathon.shopmate.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,6 +9,7 @@ fun saveEmailToPreferences(context: Context, email: String) {
     editor.putString("user_email", email)
     editor.apply()
 }
+
 fun getEmailFromPreferences(context: Context): String? {
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
     return sharedPreferences.getString("user_email", null)

@@ -5,7 +5,6 @@ import LoginRequest
 import RegisterRequest
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -35,6 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.content.SharedPreferences
 import androidx.compose.runtime.LaunchedEffect
+import com.sparkathon.shopmate.preferences.saveEmailToPreferences
 import showToast
 import java.util.concurrent.TimeUnit
 
