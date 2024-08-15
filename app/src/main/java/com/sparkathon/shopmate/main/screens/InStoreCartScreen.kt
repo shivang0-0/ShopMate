@@ -49,7 +49,7 @@ fun InStoreCartScreen() {
     LaunchedEffect(cartItems) {
         val productIds = cartItems.keys.mapNotNull { it.toIntOrNull() }
         if (productIds.isNotEmpty()) {
-            products = emptyList() // Clear current products to avoid duplicates
+            products = emptyList()
             for (productId in productIds) {
                 RetrofitInstance.api.getProducts(null, productId).enqueue(object : Callback<List<Product>> {
                     override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
@@ -68,7 +68,7 @@ fun InStoreCartScreen() {
                 })
             }
         } else {
-            products = emptyList() // Ensure products list is cleared when cart is empty
+            products = emptyList()
             isLoading = false
         }
     }
