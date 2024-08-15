@@ -29,6 +29,11 @@
             android:exported="true"
             android:theme="@style/Theme.ShopMate" >
         </activity>
+        <activity
+            android:name=".payment.PayActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ShopMate" >
+        </activity>
     </application>
 
 </manifest>
