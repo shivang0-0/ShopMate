@@ -68,7 +68,8 @@ class MainActivity : ComponentActivity() {
                 ndef?.connect()
                 val ndefMessage = ndef?.ndefMessage
                 val payload = ndefMessage?.records?.get(0)?.payload
-                val productId = String(payload ?: ByteArray(0)).trim()
+                var productId = String(payload ?: ByteArray(0)).trim()
+                productId = productId.substring(3)
                 Log.d("NFC", "Product ID: $productId")
                 addToCart(this, productId)
                 ndef?.close()
