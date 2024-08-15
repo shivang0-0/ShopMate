@@ -8,53 +8,59 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import showToast
 
-fun addToCart(context: Context, product: Product) {
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("CartPreferences", Context.MODE_PRIVATE)
-    val editor = sharedPreferences.edit()
-    val gson = Gson()
+private const val CART_PREFS = "CartPreferences"
+private const val CART_ITEMS_KEY = "cart_items"
 
-    // Retrieve the cart items as a JSON string
-    val cartJson = sharedPreferences.getString("cart_items", null)
-    val cartItems: MutableMap<String, Int> = if (cartJson != null) {
-        // Convert the JSON string back to a Map
+private fun getSharedPreferences(context: Context): SharedPreferences {
+    return context.getSharedPreferences(CART_PREFS, Context.MODE_PRIVATE)
+}
+
+private fun getCartItemsMap(context: Context): MutableMap<String, Int> {
+    val sharedPreferences = getSharedPreferences(context)
+    val cartJson = sharedPreferences.getString(CART_ITEMS_KEY, null)
+    return if (cartJson != null) {
         val type = object : TypeToken<MutableMap<String, Int>>() {}.type
-        gson.fromJson(cartJson, type)
+        Gson().fromJson(cartJson, type)
     } else {
         mutableMapOf()
     }
+}
 
-    // Check if the product ID is already in the cart
+fun addToCart(context: Context, product: Product) {
+    val cartItems = getCartItemsMap(context)
     val productId = product.id.toString()
-    if (cartItems.containsKey(productId)) {
-        // Increase the quantity
-        cartItems[productId] = cartItems[productId]!! + 1
-    } else {
-        // Add the product with a quantity of 1
-        cartItems[productId] = 1
-    }
 
-    // Save the updated cart back to SharedPreferences
-    val updatedCartJson = gson.toJson(cartItems)
-    editor.putString("cart_items", updatedCartJson)
-    editor.apply()
+    cartItems[productId] = cartItems.getOrDefault(productId, 0) + 1
 
-    // Show the toast message
+    saveCartItems(context, cartItems)
+
     showToast(context, "Added ${product.title} to cart (Quantity: ${cartItems[productId]})")
 }
 
 fun getCartItems(context: Context): Map<String, Int> {
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("CartPreferences", Context.MODE_PRIVATE)
-    val gson = Gson()
+    return getCartItemsMap(context)
+}
 
-    // Retrieve the cart items as a JSON string
-    val cartJson = sharedPreferences.getString("cart_items", null)
-    Log.d("getCartItems", "Cart JSON: $cartJson")
-    return if (cartJson != null) {
-        // Convert the JSON string back to a Map
-        val type = object : TypeToken<MutableMap<String, Int>>() {}.type
-        gson.fromJson(cartJson, type)
+fun saveCartItems(context: Context, cartItems: Map<String, Int>) {
+    val sharedPreferences = getSharedPreferences(context)
+    val editor = sharedPreferences.edit()
+    val cartJson = Gson().toJson(cartItems)
+    editor.putString(CART_ITEMS_KEY, cartJson)
+    editor.apply()
+}
+
+fun removeProductFromCart(context: Context, productId: String) {
+    val cartItems = getCartItemsMap(context)
+    cartItems.remove(productId)
+    saveCartItems(context, cartItems)
+}
+
+fun updateProductQuantity(context: Context, productId: String, quantity: Int) {
+    val cartItems = getCartItemsMap(context)
+    if (quantity > 0) {
+        cartItems[productId] = quantity
     } else {
-        // Return an empty map if no items are in the cart
-        emptyMap()
+        cartItems.remove(productId)
     }
+    saveCartItems(context, cartItems)
 }

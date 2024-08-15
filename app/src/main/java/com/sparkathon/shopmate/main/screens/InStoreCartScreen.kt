@@ -5,13 +5,26 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import com.sparkathon.shopmate.api.RetrofitInstance
 import com.sparkathon.shopmate.main.components.ProductItem
 import com.sparkathon.shopmate.preferences.getCartItems
+import com.sparkathon.shopmate.preferences.removeProductFromCart
+import com.sparkathon.shopmate.preferences.updateProductQuantity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,12 +46,11 @@ fun InStoreCartScreen() {
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Fetch the products from the API
     LaunchedEffect(cartItems) {
         val productIds = cartItems.keys.mapNotNull { it.toIntOrNull() }
         if (productIds.isNotEmpty()) {
-            for (ProductId in productIds) {
-                RetrofitInstance.api.getProducts(null, ProductId).enqueue(object : Callback<List<Product>> {
+            for (productId in productIds) {
+                RetrofitInstance.api.getProducts(null, productId).enqueue(object : Callback<List<Product>> {
                     override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
                         if (response.isSuccessful) {
                             products = products?.plus(response.body()!!) ?: response.body()
@@ -64,17 +78,9 @@ fun InStoreCartScreen() {
         contentAlignment = Alignment.Center
     ) {
         if (isLoading) {
-            // Show a loading indicator while fetching data
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
-            }
+            CircularProgressIndicator()
         } else {
             if (selectedProduct != null) {
-                // Show the product detail view if a product is selected
                 ProductViewScreen(product = selectedProduct!!)
             } else {
                 products?.let { productList ->
@@ -85,17 +91,55 @@ fun InStoreCartScreen() {
                                 .padding(vertical = 8.dp)
                         ) {
                             items(productList) { product ->
-                                val quantity = cartItems[product.id.toString()] ?: 1
+                                var quantity by remember { mutableStateOf(cartItems[product.id.toString()] ?: 1) }
+
                                 ProductItem(
                                     product = product,
                                     quantity = quantity,
-                                    onProductClick = { product ->
-                                        selectedProduct = product // Set the selected product
-                                    })
+                                    onProductClick = { selectedProduct = product }
+                                )
+
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            quantity += 1
+                                            updateProductQuantity(context, product.id.toString(), quantity)
+                                        }
+                                    ) {
+                                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increase Quantity")
+                                    }
+                                    Text(text = "$quantity")
+                                    IconButton(
+                                        onClick = {
+                                            if (quantity > 1) {
+                                                quantity -= 1
+                                                updateProductQuantity(context, product.id.toString(), quantity)
+                                            } else {
+                                                removeProductFromCart(context, product.id.toString())
+                                                products = products?.filterNot { it.id == product.id }
+                                            }
+                                        }
+                                    ) {
+                                        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Decrease Quantity")
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            removeProductFromCart(context, product.id.toString())
+                                            products = products?.filterNot { it.id == product.id }
+                                        }
+                                    ) {
+                                        Icon(Icons.Filled.Delete, contentDescription = "Remove Product")
+                                    }
+                                }
                             }
                         }
                     } else {
-                        // Show a message if the cart is empty
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
@@ -105,7 +149,6 @@ fun InStoreCartScreen() {
                         }
                     }
                 } ?: run {
-                    // Show a message if the cart is empty
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
