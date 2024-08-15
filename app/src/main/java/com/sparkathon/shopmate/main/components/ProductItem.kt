@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun ProductItem(product: Product, onProductClick: (Product) -> Unit, quantity: Int = -1) {
+fun ProductItem(product: Product, onProductClick: (Product) -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -75,16 +75,6 @@ fun ProductItem(product: Product, onProductClick: (Product) -> Unit, quantity: I
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                if (quantity != -1) {
-                    Text(
-                        text = "Quantity: $quantity",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
             }
         }
     }

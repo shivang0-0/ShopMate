@@ -98,7 +98,6 @@ fun ProfileCard(userProfile: Profile) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profile image placeholder (circle)
             Box(
                 modifier = Modifier
                     .size(80.dp)
