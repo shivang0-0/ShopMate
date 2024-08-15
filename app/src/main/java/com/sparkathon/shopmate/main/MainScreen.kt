@@ -22,7 +22,7 @@ fun MainScreen() {
 
         Box(modifier = Modifier.weight(1f)) {
             when (currentScreen) {
-                Screen.Discover -> if (isInStoreMode) InStoreScreen() else OnlineScreen()
+                Screen.Discover -> if (isInStoreMode) InStoreExploreScreen() else OnlineScreenScreen()
                 Screen.Categories -> CategoriesScreen()
                 Screen.Map -> InStoreMapScreen()
                 Screen.Wishlist -> if (isInStoreMode) InStoreWishlistScreen() else OnlineWishlistScreen()
