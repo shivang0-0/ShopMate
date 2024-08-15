@@ -26,15 +26,12 @@ private fun getCartItemsMap(context: Context): MutableMap<String, Int> {
     }
 }
 
-fun addToCart(context: Context, product: Product) {
+fun addToCart(context: Context, productId: String) {
     val cartItems = getCartItemsMap(context)
-    val productId = product.id.toString()
 
     cartItems[productId] = cartItems.getOrDefault(productId, 0) + 1
 
     saveCartItems(context, cartItems)
-
-    showToast(context, "Added ${product.title} to cart (Quantity: ${cartItems[productId]})")
 }
 
 fun getCartItems(context: Context): Map<String, Int> {
