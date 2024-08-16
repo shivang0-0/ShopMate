@@ -48,6 +48,16 @@ fun OnlineCartScreen() {
     var isLoading by remember { mutableStateOf(true) }
     var currentScreen by remember { mutableStateOf("cart") }
 
+    LaunchedEffect(Unit) {
+        while (true) {
+            val updatedCartItems = getCartItems(context)
+            if (updatedCartItems != cartItems) {
+                cartItems = updatedCartItems
+            }
+            kotlinx.coroutines.delay(2000)
+        }
+    }
+
     LaunchedEffect(cartItems) {
         val productIds = cartItems.keys.mapNotNull { it.toIntOrNull() }
         if (productIds.isNotEmpty()) {
@@ -166,13 +176,11 @@ fun OnlineCartScreen() {
                                 }
                             }
 
-                            // Calculate total price
                             val totalPrice = products?.sumOf { product ->
                                 val quantity = cartItems[product.id.toString()] ?: 1
                                 product.price * quantity
                             } ?: 0.0
 
-                            // Display total price and checkout button
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
