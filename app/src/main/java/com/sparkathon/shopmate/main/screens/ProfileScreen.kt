@@ -2,6 +2,7 @@ package com.sparkathon.shopmate.main.screens
 
 import Profile
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sparkathon.shopmate.api.RetrofitInstance
+import com.sparkathon.shopmate.auth.AuthActivity
 import com.sparkathon.shopmate.preferences.getEmailFromPreferences
 import com.sparkathon.shopmate.ui.theme.ShopMateTheme
 import retrofit2.Call
@@ -84,6 +87,8 @@ fun ProfileScreen() {
 
 @Composable
 fun ProfileCard(userProfile: Profile) {
+    val context = LocalContext.current
+
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -140,8 +145,33 @@ fun ProfileCard(userProfile: Profile) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSecondary
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { signOut(context) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Text("Sign Out")
+            }
         }
     }
+}
+
+private fun signOut(context: Context) {
+    val sharedPreferences = context.getSharedPreferences("ShopMatePrefs", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.remove("token")
+    editor.remove("expiryTime")
+    editor.apply()
+
+    showToast(context, "Signed out successfully")
+
+    val intent = Intent(context, AuthActivity::class.java)
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    context.startActivity(intent)
 }
 
 private fun getProfile(context: Context, email: String, onResult: (List<Profile>) -> Unit) {
