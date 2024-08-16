@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +46,7 @@ fun OnlineCartScreen() {
     var products by remember { mutableStateOf<List<Product>?>(null) }
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var currentScreen by remember { mutableStateOf("cart") }
 
     LaunchedEffect(cartItems) {
         val productIds = cartItems.keys.mapNotNull { it.toIntOrNull() }
@@ -56,13 +58,13 @@ fun OnlineCartScreen() {
                         if (response.isSuccessful) {
                             products = products?.plus(response.body()!!) ?: response.body()
                         } else {
-                            Log.e("InStoreCartScreen", "Failed to fetch products: ${response.errorBody()}")
+                            Log.e("OnlineCartScreen", "Failed to fetch products: ${response.errorBody()}")
                         }
                         isLoading = false
                     }
 
                     override fun onFailure(call: Call<List<Product>>, t: Throwable) {
-                        Log.e("InStoreCartScreen", "Error fetching products", t)
+                        Log.e("OnlineCartScreen", "Error fetching products", t)
                         isLoading = false
                     }
                 })
@@ -73,84 +75,119 @@ fun OnlineCartScreen() {
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else {
-            if (selectedProduct != null) {
-                ProductViewScreen(product = selectedProduct!!)
+    if (currentScreen == "payment") {
+        PaymentScreen()
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator()
             } else {
-                if (products.isNullOrEmpty()) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = "Your cart is empty")
-                    }
+                if (selectedProduct != null) {
+                    ProductViewScreen(product = selectedProduct!!)
                 } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        items(products!!, key = { it.id }) { product ->
-                            var quantity by remember { mutableStateOf(cartItems[product.id.toString()] ?: 1) }
+                    if (products.isNullOrEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = "Your cart is empty")
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(vertical = 8.dp)
+                            ) {
+                                items(products!!, key = { it.id }) { product ->
+                                    var quantity by remember { mutableStateOf(cartItems[product.id.toString()] ?: 1) }
 
-                            ProductItem(
-                                product = product,
-                                onProductClick = { selectedProduct = product }
-                            )
+                                    ProductItem(
+                                        product = product,
+                                        onProductClick = { selectedProduct = product }
+                                    )
 
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                quantity += 1
+                                                updateProductQuantity(context, product.id.toString(), quantity)
+                                            }
+                                        ) {
+                                            Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increase Quantity")
+                                        }
+                                        Text(text = "$quantity")
+                                        IconButton(
+                                            onClick = {
+                                                if (quantity > 1) {
+                                                    quantity -= 1
+                                                    updateProductQuantity(context, product.id.toString(), quantity)
+                                                } else {
+                                                    removeProductFromCart(context, product.id.toString())
+                                                    cartItems = getCartItems(context)
+                                                    products = products?.filterNot { it.id == product.id }
+                                                    if (products.isNullOrEmpty()) {
+                                                        products = emptyList()
+                                                    }
+                                                }
+                                            }
+                                        ) {
+                                            Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Decrease Quantity")
+                                        }
+                                        IconButton(
+                                            onClick = {
+                                                removeProductFromCart(context, product.id.toString())
+                                                cartItems = getCartItems(context)
+                                                products = products?.filterNot { it.id == product.id }
+                                                if (products.isNullOrEmpty()) {
+                                                    products = emptyList()
+                                                }
+                                            }
+                                        ) {
+                                            Icon(Icons.Filled.Delete, contentDescription = "Remove Product")
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Calculate total price
+                            val totalPrice = products?.sumOf { product ->
+                                val quantity = cartItems[product.id.toString()] ?: 1
+                                product.price * quantity
+                            } ?: 0.0
+
+                            // Display total price and checkout button
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .padding(16.dp)
                             ) {
-                                IconButton(
-                                    onClick = {
-                                        quantity += 1
-                                        updateProductQuantity(context, product.id.toString(), quantity)
-                                    }
+                                Text(
+                                    text = "Total: $${"%.2f".format(totalPrice)}",
+                                    modifier = Modifier.align(Alignment.End)
+                                )
+                                Button(
+                                    onClick = { currentScreen = "payment" },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp)
                                 ) {
-                                    Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Increase Quantity")
-                                }
-                                Text(text = "$quantity")
-                                IconButton(
-                                    onClick = {
-                                        if (quantity > 1) {
-                                            quantity -= 1
-                                            updateProductQuantity(context, product.id.toString(), quantity)
-                                        } else {
-                                            removeProductFromCart(context, product.id.toString())
-                                            cartItems = getCartItems(context)
-                                            products = products?.filterNot { it.id == product.id }
-                                            if (products.isNullOrEmpty()) {
-                                                products = emptyList()
-                                            }
-                                        }
-                                    }
-                                ) {
-                                    Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Decrease Quantity")
-                                }
-                                IconButton(
-                                    onClick = {
-                                        removeProductFromCart(context, product.id.toString())
-                                        cartItems = getCartItems(context)
-                                        products = products?.filterNot { it.id == product.id }
-                                        if (products.isNullOrEmpty()) {
-                                            products = emptyList()
-                                        }
-                                    }
-                                ) {
-                                    Icon(Icons.Filled.Delete, contentDescription = "Remove Product")
+                                    Text(text = "Checkout")
                                 }
                             }
                         }
