@@ -106,7 +106,7 @@ fun InStoreCartScreen() {
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "Your cart is empty")
+                            Text(text = "")
                         }
                     } else {
                         Column(
