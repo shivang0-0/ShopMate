@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.sparkathon.shopmate.api.RetrofitInstance
-import com.sparkathon.shopmate.main.components.ProductItem
+import com.sparkathon.shopmate.main.components.ProductItem1
 import com.sparkathon.shopmate.preferences.getCartItems
 import com.sparkathon.shopmate.preferences.removeProductFromCart
 import com.sparkathon.shopmate.preferences.updateProductQuantity
@@ -121,7 +121,7 @@ fun OnlineCartScreen() {
                                 items(products!!, key = { it.id }) { product ->
                                     var quantity by remember { mutableStateOf(cartItems[product.id.toString()] ?: 1) }
 
-                                    ProductItem(
+                                    ProductItem1(
                                         product = product,
                                         onProductClick = { selectedProduct = product },
                                         context = context
