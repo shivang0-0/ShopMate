@@ -113,7 +113,8 @@ fun OnlineCartScreen() {
 
                                     ProductItem(
                                         product = product,
-                                        onProductClick = { selectedProduct = product }
+                                        onProductClick = { selectedProduct = product },
+                                        context = context
                                     )
 
                                     Row(

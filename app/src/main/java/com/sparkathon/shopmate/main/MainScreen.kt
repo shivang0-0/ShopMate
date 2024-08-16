@@ -25,7 +25,7 @@ fun MainScreen() {
                 Screen.Discover -> if (isInStoreMode) InStoreExploreScreen() else OnlineScreenScreen()
                 Screen.Categories -> CategoriesScreen()
                 Screen.Map -> InStoreMapScreen()
-                Screen.Wishlist -> if (isInStoreMode) InStoreWishlistScreen() else OnlineWishlistScreen()
+                Screen.Wishlist -> WishlistScreen()
                 Screen.Profile -> ProfileScreen()
                 Screen.Cart -> if (isInStoreMode) InStoreCartScreen() else OnlineCartScreen()
             }

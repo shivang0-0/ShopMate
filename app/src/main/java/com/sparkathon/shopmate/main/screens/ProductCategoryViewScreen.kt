@@ -55,9 +55,11 @@ fun ProductCategoryViewScreen(category: String, onProductClick: (Product) -> Uni
                     modifier = Modifier.size(50.dp)
                 )
             } else {
-                ProductList(products = products) { product ->
-                    onProductClick(product)
-                }
+                ProductList(
+                    products = products,
+                    onProductClick = onProductClick,
+                    context = context
+                )
             }
         }
     }

@@ -61,7 +61,8 @@ fun OnlineScreenScreen() {
                 products = products,
                 onProductClick = { product ->
                     selectedProduct = product
-                }
+                },
+                context = context
             )
         }
     }

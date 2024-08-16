@@ -59,7 +59,8 @@ fun InStoreExploreScreen() {
                 products = products,
                 onProductClick = { product ->
                     selectedProduct = product
-                }
+                },
+                context = context
             )
         }
     }
