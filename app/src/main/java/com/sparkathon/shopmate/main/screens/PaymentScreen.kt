@@ -37,7 +37,14 @@ fun PaymentScreen() {
     val coroutineScope = rememberCoroutineScope()
     val textFieldColors = MaterialTheme.colorScheme.secondary
 
-    val isFormValid = cardNumber.isNotBlank() && cardCvc.isNotBlank() && cardExpirationDate.isNotBlank() && cardName.isNotBlank()
+    // Validation checks
+    val isCardNumberValid = cardNumber.length == 16 && cardNumber.all { it.isDigit() }
+    val isCvcValid = cardCvc.length == 3 && cardCvc.all { it.isDigit() }
+    val isExpirationDateValid = Regex("^(0[1-9]|1[0-2])/\\d{4}\$").matches(cardExpirationDate)
+    val isCardNameValid = cardName.isNotBlank()
+
+    // Form validation
+    val isFormValid = isCardNumberValid && isCvcValid && isExpirationDateValid && isCardNameValid
 
     Column(
         modifier = Modifier
@@ -48,7 +55,7 @@ fun PaymentScreen() {
         OutlinedTextField(
             value = cardNumber,
             onValueChange = { cardNumber = it },
-            label = { Text("Card Number") },
+            label = { Text("Card Number (16 digits)") },
             modifier = Modifier.fillMaxWidth(),
             colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
                 focusedTextColor = textFieldColors,
@@ -60,10 +67,18 @@ fun PaymentScreen() {
             ),
             isError = cardNumber.isBlank()
         )
+        if (!isCardNumberValid && cardNumber.isNotBlank()) {
+            Text(
+                text = "Invalid card number. Must be 16 digits.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         OutlinedTextField(
             value = cardCvc,
             onValueChange = { cardCvc = it },
-            label = { Text("CVC") },
+            label = { Text("CVC (3 digits)") },
             modifier = Modifier.fillMaxWidth(),
             colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
                 focusedTextColor = textFieldColors,
@@ -75,6 +90,14 @@ fun PaymentScreen() {
             ),
             isError = cardNumber.isBlank()
         )
+        if (!isCvcValid && cardCvc.isNotBlank()) {
+            Text(
+                text = "Invalid CVC. Must be 3 digits.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         OutlinedTextField(
             value = cardExpirationDate,
             onValueChange = { cardExpirationDate = it },
@@ -90,6 +113,14 @@ fun PaymentScreen() {
             ),
             isError = cardNumber.isBlank()
         )
+        if (!isExpirationDateValid && cardExpirationDate.isNotBlank()) {
+            Text(
+                text = "Invalid expiration date. Must be MM/YYYY.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         OutlinedTextField(
             value = cardName,
             onValueChange = { cardName = it },
@@ -105,6 +136,14 @@ fun PaymentScreen() {
             ),
             isError = cardNumber.isBlank()
         )
+        if (!isCardNameValid && cardName.isNotBlank()) {
+            Text(
+                text = "Cardholder name cannot be empty.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
         Button(
             onClick = {
                 if (isFormValid) {
@@ -124,6 +163,7 @@ fun PaymentScreen() {
         ) {
             Text("Submit Payment")
         }
+
         if (responseMessage.isNotEmpty()) {
             Text(
                 text = responseMessage,
@@ -150,7 +190,7 @@ suspend fun sendPaymentRequest(
         }
 
         val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "GET"
+        connection.requestMethod = "POST" // Use POST for sending data securely
         connection.setRequestProperty("Content-Type", "application/json")
         connection.doOutput = true
 
