@@ -61,3 +61,10 @@ fun updateProductQuantity(context: Context, productId: String, quantity: Int) {
     }
     saveCartItems(context, cartItems)
 }
+
+fun clearCart(context: Context) {
+    val sharedPreferences = getSharedPreferences(context)
+    val editor = sharedPreferences.edit()
+    editor.remove(CART_ITEMS_KEY)
+    editor.apply()
+}
