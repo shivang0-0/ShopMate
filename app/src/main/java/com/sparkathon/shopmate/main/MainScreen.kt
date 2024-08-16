@@ -6,9 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.sparkathon.shopmate.main.screens.*
 
-@Preview
 @Composable
-fun MainScreen() {
+fun MainScreen(nfcTagData: String?) {
     var isInStoreMode by remember { mutableStateOf(false) }
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Discover) }
 
@@ -24,7 +23,7 @@ fun MainScreen() {
             when (currentScreen) {
                 Screen.Discover -> if (isInStoreMode) InStoreExploreScreen() else OnlineScreenScreen()
                 Screen.Categories -> CategoriesScreen()
-                Screen.Map -> InStoreMapScreen()
+                Screen.Map -> InStoreMapScreen(nfcTagData = nfcTagData)
                 Screen.Wishlist -> WishlistScreen()
                 Screen.Profile -> ProfileScreen()
                 Screen.Cart -> if (isInStoreMode) InStoreCartScreen() else OnlineCartScreen()
@@ -39,4 +38,10 @@ fun MainScreen() {
             activeScreen = currentScreen
         )
     }
+}
+
+@Preview
+@Composable
+fun MainScreenPreview() {
+    MainScreen(nfcTagData = null) // Provide a default value for preview
 }

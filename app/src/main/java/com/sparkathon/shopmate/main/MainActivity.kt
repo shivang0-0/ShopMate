@@ -10,18 +10,21 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.sparkathon.shopmate.preferences.addToCart
 import com.sparkathon.shopmate.ui.theme.ShopMateTheme
+import com.sparkathon.shopmate.preferences.addToCart
+import com.sparkathon.shopmate.main.screens.InStoreMapScreen
+import com.sparkathon.shopmate.main.MainScreen
 
 class MainActivity : ComponentActivity() {
 
     private var nfcAdapter: NfcAdapter? = null
+    private var nfcTagData: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ShopMateTheme {
-                MainScreen()
+                MainScreen(nfcTagData = nfcTagData) // Pass nfcTagData to MainScreen
             }
         }
 
@@ -61,17 +64,28 @@ class MainActivity : ComponentActivity() {
             NfcAdapter.ACTION_TAG_DISCOVERED == action) {
 
             val tag: Tag? = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
-            Log.d("NFC", "Tag: $tag")
             tag?.let { nfcTag ->
                 val ndef = Ndef.get(nfcTag)
-                Log.d("NFC", "NDEF: $ndef")
                 ndef?.connect()
                 val ndefMessage = ndef?.ndefMessage
                 val payload = ndefMessage?.records?.get(0)?.payload
-                var productId = String(payload ?: ByteArray(0)).trim()
-                productId = productId.substring(3)
-                Log.d("NFC", "Product ID: $productId")
-                addToCart(this, productId)
+                var data = String(payload ?: ByteArray(0)).trim()
+                data = data.substring(3) // Remove any unnecessary prefix
+                Log.d("NFC", "Data: $data")
+
+                if (data.startsWith("locator")) {
+                    // If the data contains "locator", open the map
+                    nfcTagData = data
+                    setContent {
+                        ShopMateTheme {
+                            InStoreMapScreen(nfcTagData = nfcTagData) // Pass the NFC data to the map screen
+                        }
+                    }
+                } else if (data.all { it.isDigit() }) {
+                    // If the data is a number, perform the cart functionality
+                    addToCart(this, data)
+                }
+
                 ndef?.close()
             }
         }
