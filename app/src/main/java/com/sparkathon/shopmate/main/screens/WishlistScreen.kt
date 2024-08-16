@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.sparkathon.shopmate.api.RetrofitInstance
-import com.sparkathon.shopmate.main.components.ProductItem
+import com.sparkathon.shopmate.main.components.ProductItem1
 import com.sparkathon.shopmate.preferences.getWishlistItems
 import retrofit2.Call
 import retrofit2.Callback
@@ -92,7 +92,7 @@ fun WishlistScreen() {
                                 .padding(vertical = 8.dp)
                         ) {
                             items(products!!, key = { it.id }) { product ->
-                                ProductItem(
+                                ProductItem1(
                                     product = product,
                                     onProductClick = { selectedProduct = product },
                                     context = context
