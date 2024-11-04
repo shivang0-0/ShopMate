@@ -42,6 +42,9 @@
             </intent-filter>
         </activity>
 
+        <!-- Map Activity -->
+        <activity android:name=".main.screens.InStoreMapActivity" />
+
     </application>
 
 </manifest>
