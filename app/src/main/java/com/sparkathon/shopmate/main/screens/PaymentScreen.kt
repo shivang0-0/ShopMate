@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import org.json.JSONException
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -58,139 +59,153 @@ fun PaymentScreen() {
     if (showSuccessAnimation) {
         SuccessAnimation(onAnimationEnd = {
             showSuccessAnimation = false
-            responseMessage = ""
         })
     } else if (showErrorAnimation) {
         ErrorAnimation(onAnimationEnd = {
             showErrorAnimation = false
-            responseMessage = ""
         })
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            OutlinedTextField(
-                value = cardNumber,
-                onValueChange = { cardNumber = it },
-                label = { Text("Card Number (16 digits)") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = textFieldColors,
-                    unfocusedTextColor = textFieldColors,
-                    errorTextColor = textFieldColors,
-                    cursorColor = textFieldColors,
-                    focusedLabelColor = textFieldColors,
-                    unfocusedLabelColor = textFieldColors,
-                ),
-                isError = !isCardNumberValid && cardNumber.isNotBlank()
-            )
-            if (!isCardNumberValid && cardNumber.isNotBlank()) {
-                Text(
-                    text = "Invalid card number. Must be 16 digits.",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+    }
 
-            OutlinedTextField(
-                value = cardCvc,
-                onValueChange = { cardCvc = it },
-                label = { Text("CVC (3 digits)") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = textFieldColors,
-                    unfocusedTextColor = textFieldColors,
-                    cursorColor = textFieldColors,
-                    focusedLabelColor = textFieldColors,
-                    unfocusedLabelColor = textFieldColors,
-                    errorTextColor = textFieldColors
-                ),
-                isError = !isCvcValid && cardCvc.isNotBlank()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        OutlinedTextField(
+            value = cardNumber,
+            onValueChange = { cardNumber = it },
+            label = { Text("Card Number (16 digits)") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textFieldColors,
+                unfocusedTextColor = textFieldColors,
+                errorTextColor = textFieldColors,
+                cursorColor = textFieldColors,
+                focusedLabelColor = textFieldColors,
+                unfocusedLabelColor = textFieldColors,
+            ),
+            isError = !isCardNumberValid && cardNumber.isNotBlank()
+        )
+        if (!isCardNumberValid && cardNumber.isNotBlank()) {
+            Text(
+                text = "Invalid card number. Must be 16 digits.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
             )
-            if (!isCvcValid && cardCvc.isNotBlank()) {
-                Text(
-                    text = "Invalid CVC. Must be 3 digits.",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+        }
 
-            OutlinedTextField(
-                value = cardExpirationDate,
-                onValueChange = { cardExpirationDate = it },
-                label = { Text("Expiration Date (MM/YYYY)") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = textFieldColors,
-                    unfocusedTextColor = textFieldColors,
-                    cursorColor = textFieldColors,
-                    focusedLabelColor = textFieldColors,
-                    unfocusedLabelColor = textFieldColors,
-                    errorTextColor = textFieldColors
-                ),
-                isError = !isExpirationDateValid && cardExpirationDate.isNotBlank()
+        OutlinedTextField(
+            value = cardCvc,
+            onValueChange = { cardCvc = it },
+            label = { Text("CVC (3 digits)") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textFieldColors,
+                unfocusedTextColor = textFieldColors,
+                cursorColor = textFieldColors,
+                focusedLabelColor = textFieldColors,
+                unfocusedLabelColor = textFieldColors,
+                errorTextColor = textFieldColors
+            ),
+            isError = !isCvcValid && cardCvc.isNotBlank()
+        )
+        if (!isCvcValid && cardCvc.isNotBlank()) {
+            Text(
+                text = "Invalid CVC. Must be 3 digits.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
             )
-            if (!isExpirationDateValid && cardExpirationDate.isNotBlank()) {
-                Text(
-                    text = "Invalid expiration date. Must be MM/YYYY.",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+        }
 
-            OutlinedTextField(
-                value = cardName,
-                onValueChange = { cardName = it },
-                label = { Text("Cardholder Name") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = textFieldColors,
-                    unfocusedTextColor = textFieldColors,
-                    cursorColor = textFieldColors,
-                    focusedLabelColor = textFieldColors,
-                    unfocusedLabelColor = textFieldColors,
-                    errorTextColor = textFieldColors
-                ),
-                isError = !isCardNameValid && cardName.isNotBlank()
+        OutlinedTextField(
+            value = cardExpirationDate,
+            onValueChange = { cardExpirationDate = it },
+            label = { Text("Expiration Date (MM/YYYY)") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textFieldColors,
+                unfocusedTextColor = textFieldColors,
+                cursorColor = textFieldColors,
+                focusedLabelColor = textFieldColors,
+                unfocusedLabelColor = textFieldColors,
+                errorTextColor = textFieldColors
+            ),
+            isError = !isExpirationDateValid && cardExpirationDate.isNotBlank()
+        )
+        if (!isExpirationDateValid && cardExpirationDate.isNotBlank()) {
+            Text(
+                text = "Invalid expiration date. Must be MM/YYYY.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
             )
-            if (!isCardNameValid && cardName.isNotBlank()) {
-                Text(
-                    text = "Cardholder name cannot be empty.",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+        }
 
-            Button(
-                onClick = {
-                    if (isFormValid) {
-                        coroutineScope.launch {
-                            val response = sendPaymentRequest(
-                                cardNumber,
-                                cardCvc,
-                                cardExpirationDate,
-                                cardName
-                            )
-                            responseMessage = response
-                            if (response.contains("\"Payment Status\": \"Payment Received\"")){
+        OutlinedTextField(
+            value = cardName,
+            onValueChange = { cardName = it },
+            label = { Text("Cardholder Name") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = textFieldColors,
+                unfocusedTextColor = textFieldColors,
+                cursorColor = textFieldColors,
+                focusedLabelColor = textFieldColors,
+                unfocusedLabelColor = textFieldColors,
+                errorTextColor = textFieldColors
+            ),
+            isError = !isCardNameValid && cardName.isNotBlank()
+        )
+        if (!isCardNameValid && cardName.isNotBlank()) {
+            Text(
+                text = "Cardholder name cannot be empty.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        Button(
+            onClick = {
+                if (isFormValid) {
+                    coroutineScope.launch {
+                        val response = sendPaymentRequest(
+                            cardNumber,
+                            cardCvc,
+                            cardExpirationDate,
+                            cardName
+                        )
+
+                        // Parse response and extract the "Payment Status" message
+                        try {
+                            val jsonResponse = JSONObject(response)
+                            responseMessage = jsonResponse.optString("Payment Status", "Unknown Status")
+                            if (responseMessage == "Payment Received") {
                                 showSuccessAnimation = true
                                 clearCart(context)
                             } else {
                                 showErrorAnimation = true
-                                kotlinx.coroutines.delay(5000)
-                                showErrorAnimation = false
                             }
+                        } catch (e: JSONException) {
+                            responseMessage = "Invalid response from server"
+                            showErrorAnimation = true
                         }
                     }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = isFormValid
-            ) {
-                Text("Submit Payment")
-            }
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = isFormValid
+        ) {
+            Text("Submit Payment")
+        }
+
+        // Display the response message below the button
+        if (responseMessage.isNotBlank()) {
+            Text(
+                text = responseMessage,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = 16.dp),
+                color = if (showSuccessAnimation) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+            )
         }
     }
 }
@@ -206,6 +221,7 @@ fun SuccessAnimation(onAnimationEnd: () -> Unit) {
 
     LaunchedEffect(progress) {
         if (progress == 1.0f) {
+            onAnimationEnd()
         }
     }
 
@@ -225,6 +241,7 @@ fun ErrorAnimation(onAnimationEnd: () -> Unit) {
 
     LaunchedEffect(progress) {
         if (progress == 1.0f) {
+            onAnimationEnd()
         }
     }
 
@@ -240,25 +257,32 @@ suspend fun sendPaymentRequest(
     cardName: String
 ): String {
     return withContext(Dispatchers.IO) {
-        val url = URL("http://143.110.182.65:6969/")
-        val jsonBody = JSONObject().apply {
-            put("card_number", cardNumber.toLong())
-            put("card_cvc", cardCvc.toInt())
-            put("card_expiration_date", cardExpirationDate)
-            put("card_name", cardName)
-        }
+        try {
+            val url = URL("http://64.227.156.56:6969/")
+            val jsonBody = JSONObject().apply {
+                put("card_number", cardNumber.toLong())
+                put("card_cvc", cardCvc.toInt())
+                put("card_expiration_date", cardExpirationDate)
+                put("card_name", cardName)
+            }
 
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "POST" // Use POST for sending data securely
-        connection.setRequestProperty("Content-Type", "application/json")
-        connection.doOutput = true
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "POST"
+            connection.setRequestProperty("Content-Type", "application/json")
+            connection.doOutput = true
 
-        connection.outputStream.use { outputStream ->
-            outputStream.write(jsonBody.toString().toByteArray())
-        }
+            connection.outputStream.use { outputStream ->
+                outputStream.write(jsonBody.toString().toByteArray(Charsets.UTF_8))
+            }
 
-        return@withContext connection.inputStream.use { inputStream ->
-            inputStream.bufferedReader().readText()
+            val response = connection.inputStream.use { inputStream ->
+                inputStream.bufferedReader().readText()
+            }
+
+            return@withContext response
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return@withContext "{\"error\": \"${e.message}\"}"
         }
     }
 }
